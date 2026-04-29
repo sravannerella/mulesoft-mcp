@@ -1,0 +1,80 @@
+services:
+  mulesoft-mcp:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: runtime          # only build the final stage
+    image: mulesoft-mcp:latest
+    container_name: mulesoft-mcp
+
+    # ── Load credentials from .env file ──────────────────────────────────────
+    env_file:
+      - .env
+
+    # ── Credentials (override with a .env file or Docker secrets) ────────────
+    environment:
+      NODE_ENV: production
+      LOG_LEVEL: ${LOG_LEVEL:-info}
+      ANYPOINT_HOST: ${ANYPOINT_HOST:-https://anypoint.mulesoft.com}
+
+      # ── Auth — supply ONE of the two options below ──────────────────────────
+      # Option A: username / password
+      ANYPOINT_USERNAME: ${ANYPOINT_USERNAME:-}
+      ANYPOINT_PASSWORD: ${ANYPOINT_PASSWORD:-}
+
+      # Option B: Connected App (recommended for CI/CD)
+      ANYPOINT_CLIENT_ID: ${ANYPOINT_CLIENT_ID:-}
+      ANYPOINT_CLIENT_SECRET: ${ANYPOINT_CLIENT_SECRET:-}
+
+      # ── Supergateway (StreamableHTTP) ────────────────────────────────────────
+      SUPERGATEWAY_PORT: ${SUPERGATEWAY_PORT:-8000}
+
+      # ── Scope ────────────────────────────────────────────────────────────────
+      ANYPOINT_ORG_ID: ${ANYPOINT_ORG_ID}
+      ANYPOINT_ENV_ID: ${ANYPOINT_ENV_ID:-}
+
+      # ── Tuning ───────────────────────────────────────────────────────────────
+      CLI_TIMEOUT_MS: ${CLI_TIMEOUT_MS:-30000}
+      CLI_MAX_RETRIES: ${CLI_MAX_RETRIES:-3}
+      RATE_LIMIT_RPS: ${RATE_LIMIT_RPS:-10}
+      CACHE_TTL_SECONDS: ${CACHE_TTL_SECONDS:-300}
+
+    # ── StreamableHTTP port (supergateway) ─────────────────────────────────────
+    ports:
+      - "8085:8000"
+
+    # ── Resource limits ───────────────────────────────────────────────────────
+    deploy:
+      resources:
+        limits:
+          cpus: '0.50'
+          memory: 512M
+        reservations:
+          cpus: '0.10'
+          memory: 128M
+
+    # ── Restart policy ────────────────────────────────────────────────────────
+    restart: unless-stopped
+
+    # ── Logging ───────────────────────────────────────────────────────────────
+    logging:
+      driver: json-file
+      options:
+        max-size: '10m'
+        max-file: '3'
+
+    # ── Security ──────────────────────────────────────────────────────────────
+    read_only: true
+    security_opt:
+      - no-new-privileges:true
+    tmpfs:
+      - /tmp                              # writable scratch space for CLI temp files
+      - /home/mcp/.config                 # anypoint-cli-v4 plugin cache dir
+
+    # ── Health check (supergateway /health endpoint) ──────────────────────────
+    healthcheck:
+      test: ["CMD", "curl", "-sf", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      start_period: 20s
+      retries: 3

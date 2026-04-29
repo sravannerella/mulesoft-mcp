@@ -1,0 +1,29 @@
+{
+  "name": "mulesoft-mcp",
+  "version": "1.0.0",
+  "description": "Production-ready MCP Server wrapping Anypoint CLI v4",
+  "type": "module",
+  "main": "dist/index.js",
+  "bin": {
+    "mulesoft-mcp": "dist/index.js"
+  },
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsx src/index.ts",
+    "start": "node dist/index.js",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.10.2",
+    "dotenv": "^16.4.5",
+    "execa": "^9.5.2",
+    "winston": "^3.17.0",
+    "zod": "^3.24.1"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.0",
+    "tsup": "^8.3.5",
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.2"
+  }
+}
