@@ -84,6 +84,24 @@ The server communicates over **stdio**. To connect Claude Desktop, add to `claud
   }
 }
 ```
+---
+
+## Running with Docker Compose
+
+Docker image is available on Docker Hub: [snerella/mulesoft-mcp](https://hub.docker.com/r/snerella/mulesoft-mcp). It can be run with environment variables passed at runtime, so your credentials are never baked into the image.
+
+```yaml
+services:
+  mcp:
+    image: snerella/mulesoft-mcp:latest
+    environment:
+      - ANYPOINT_CLIENT_ID=...
+      - ANYPOINT_CLIENT_SECRET=...
+      - ANYPOINT_ORG_ID=...
+      - ANYPOINT_ENV_ID=Sandbox
+    ports:
+      - 8085:8085
+```
 
 ---
 
