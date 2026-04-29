@@ -13,27 +13,6 @@ MCP server that wraps [Anypoint CLI v4](https://docs.mulesoft.com/anypoint-cli/l
 
 ## Configuration
 
-Copy `.env.example` to `.env` and fill in your credentials:
-
-```env
-# Auth — use one of the two options:
-ANYPOINT_USERNAME=your-username
-ANYPOINT_PASSWORD=your-password
-
-# OR (recommended for CI/CD):
-ANYPOINT_CLIENT_ID=your-client-id
-ANYPOINT_CLIENT_SECRET=your-client-secret
-
-# Required
-ANYPOINT_ORG_ID=your-org-id
-
-# Optional — default environment; can be overridden per tool call
-ANYPOINT_ENV_ID=Sandbox
-
-# Optional — hostname only, no https://
-ANYPOINT_HOST=anypoint.mulesoft.com
-```
-
 | Variable | Required | Default | Description |
 |---|---|---|---|
 | `ANYPOINT_USERNAME` | ¹ | — | Anypoint username |
@@ -49,7 +28,7 @@ ANYPOINT_HOST=anypoint.mulesoft.com
 | `LOG_LEVEL` | — | `info` | `error` / `warn` / `info` / `debug` |
 | `CACHE_TTL_SECONDS` | — | `300` | Read-cache TTL (seconds) |
 
-¹ Either username+password **or** client_id+client_secret required.
+¹ Either username + password **or** client_id + client_secret required.
 
 ---
 
@@ -100,7 +79,7 @@ services:
       - ANYPOINT_ORG_ID=...
       - ANYPOINT_ENV_ID=Sandbox
     ports:
-      - 8085:8085
+      - 8085:8000
 ```
 
 ---
