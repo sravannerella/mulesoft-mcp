@@ -18,12 +18,10 @@ export class ExchangeService {
     const { limit = 25, offset = 0 } = pagination;
     const cacheKey = `exchange:assets:${search ?? ''}:${limit}:${offset}:${organizationOnly}`;
 
-    const args = [
-      'exchange', 'asset', 'list',
-      '--limit', String(limit),
-      '--offset', String(offset),
-    ];
-    if (search) args.push('--search', search);
+    const args = ['exchange', 'asset', 'list'];
+    const normalizedSearch = search?.trim();
+    if (normalizedSearch) args.push(normalizedSearch);
+    args.push('--limit', String(limit), '--offset', String(offset));
     if (organizationOnly) args.push('--organizationId', env.ANYPOINT_ORG_ID);
 
     return withCache(this.cache, cacheKey, () =>
@@ -31,13 +29,16 @@ export class ExchangeService {
     );
   }
 
-  getAsset(groupId: string, assetId: string, version: string): Promise<ExchangeAsset> {
+  getAsset(groupId: string | undefined, assetId: string, version: string): Promise<ExchangeAsset> {
+    const identifier = groupId
+      ? `${groupId}/${assetId}/${version}`
+      : `${assetId}/${version}`;
     return withCache(
       this.cache,
-      `exchange:asset:${groupId}:${assetId}:${version}`,
+      `exchange:asset:${groupId ?? ''}:${assetId}:${version}`,
       () =>
         this.cli.runCommand<ExchangeAsset>([
-          'exchange', 'asset', 'describe', `${groupId}/${assetId}/${version}`,
+          'exchange', 'asset', 'describe', identifier,
         ]),
     );
   }

@@ -32,7 +32,7 @@ export function registerRuntimeManagerTools(
     'List all CloudHub 2.0 deployments.',
     {
       target: z.string().optional().describe('Filter by target (Shared Space or Private Space name)'),
-      environment: z.string().optional().describe('Environment name (overrides ANYPOINT_ENV_ID from config)'),
+      environment: z.string().optional().describe('Environment name (overrides ANYPOINT_ENV_NAME from config)'),
     },
     async ({ target, environment }) => {
       try { return ok(await svc.listCloudHub2Deployments(target, environment)); } catch (e) { return err(e); }
@@ -44,7 +44,7 @@ export function registerRuntimeManagerTools(
     'Get details for a specific CloudHub 2.0 deployment.',
     {
       name: z.string().min(1).describe('Deployment name'),
-      environment: z.string().optional().describe('Environment name (overrides ANYPOINT_ENV_ID from config)'),
+      environment: z.string().optional().describe('Environment name (overrides ANYPOINT_ENV_NAME from config)'),
     },
     async ({ name, environment }) => {
       try { return ok(await svc.describeCloudHub2Deployment(name, environment)); } catch (e) { return err(e); }
@@ -61,7 +61,7 @@ export function registerRuntimeManagerTools(
       runtimeVersion: z.string().optional().describe('Mule runtime version, e.g. "4.6.0"'),
       replicas: z.number().int().min(1).optional().describe('Number of replicas'),
       replicaSize: z.string().optional().describe('Replica size in vCores, e.g. "0.1", "0.5", "1"'),
-      environment: z.string().optional().describe('Environment name (overrides ANYPOINT_ENV_ID from config)'),
+      environment: z.string().optional().describe('Environment name (overrides ANYPOINT_ENV_NAME from config)'),
     },
     async (opts) => {
       try { return ok(await svc.deployCloudHub2Application(opts, opts.environment)); } catch (e) { return err(e); }
@@ -88,7 +88,7 @@ export function registerRuntimeManagerTools(
       limit: z.number().int().min(1).max(500).default(100).describe('Maximum number of results to return'),
       offset: z.number().int().min(0).default(0).describe('Pagination offset'),
       sort: z.string().optional().describe('Sort field, e.g. "name", "status"'),
-      environment: z.string().optional().describe('Environment name (overrides ANYPOINT_ENV_ID from config)'),
+      environment: z.string().optional().describe('Environment name (overrides ANYPOINT_ENV_NAME from config)'),
     },
     async ({ limit, offset, sort, environment }) => {
       try { return ok(await svc.listApplications(limit, offset, sort, environment)); } catch (e) { return err(e); }
@@ -100,7 +100,7 @@ export function registerRuntimeManagerTools(
     'Get details of a specific Runtime Manager application.',
     {
       name: z.string().min(1).describe('Application name'),
-      environment: z.string().optional().describe('Environment name (overrides ANYPOINT_ENV_ID from config)'),
+      environment: z.string().optional().describe('Environment name (overrides ANYPOINT_ENV_NAME from config)'),
     },
     async ({ name, environment }) => {
       try { return ok(await svc.describeApplication(name, environment)); } catch (e) { return err(e); }
@@ -112,7 +112,7 @@ export function registerRuntimeManagerTools(
     'Start a Runtime Manager application.',
     {
       name: z.string().min(1),
-      environment: z.string().optional().describe('Environment name (overrides ANYPOINT_ENV_ID from config)'),
+      environment: z.string().optional().describe('Environment name (overrides ANYPOINT_ENV_NAME from config)'),
     },
     async ({ name, environment }) => {
       try { return ok(await svc.startApplication(name, environment)); } catch (e) { return err(e); }
@@ -124,7 +124,7 @@ export function registerRuntimeManagerTools(
     'Stop a Runtime Manager application.',
     {
       name: z.string().min(1),
-      environment: z.string().optional().describe('Environment name (overrides ANYPOINT_ENV_ID from config)'),
+      environment: z.string().optional().describe('Environment name (overrides ANYPOINT_ENV_NAME from config)'),
     },
     async ({ name, environment }) => {
       try { return ok(await svc.stopApplication(name, environment)); } catch (e) { return err(e); }
@@ -136,7 +136,7 @@ export function registerRuntimeManagerTools(
     'Restart a Runtime Manager application.',
     {
       name: z.string().min(1),
-      environment: z.string().optional().describe('Environment name (overrides ANYPOINT_ENV_ID from config)'),
+      environment: z.string().optional().describe('Environment name (overrides ANYPOINT_ENV_NAME from config)'),
     },
     async ({ name, environment }) => {
       try { return ok(await svc.restartApplication(name, environment)); } catch (e) { return err(e); }
@@ -148,7 +148,7 @@ export function registerRuntimeManagerTools(
     'Delete a Runtime Manager application.',
     {
       name: z.string().min(1),
-      environment: z.string().optional().describe('Environment name (overrides ANYPOINT_ENV_ID from config)'),
+      environment: z.string().optional().describe('Environment name (overrides ANYPOINT_ENV_NAME from config)'),
     },
     async ({ name, environment }) => {
       try { return ok(await svc.deleteApplication(name, environment)); } catch (e) { return err(e); }

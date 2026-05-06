@@ -14,7 +14,7 @@ export class AccountService {
 
   describeUser(): Promise<UserInfo> {
     return withCache(this.cache, 'account:user', () =>
-      this.cli.runCommand<UserInfo>(['account', 'user', 'describe']),
+      this.cli.runCommand<UserInfo>(['account', 'user', 'describe'], undefined, { skipEnvironment: true }),
     );
   }
 
@@ -24,7 +24,7 @@ export class AccountService {
     return withCache(this.cache, 'account:bgs', () =>
       this.cli.runCommand<BusinessGroup[]>([
         'account', 'business-group', 'list',
-      ]),
+      ], undefined, { skipEnvironment: true }),
     );
   }
 
@@ -32,7 +32,7 @@ export class AccountService {
 
   listEnvironments(): Promise<Environment[]> {
     return withCache(this.cache, 'account:envs', () =>
-      this.cli.runCommand<Environment[]>(['account', 'environment', 'list']),
+      this.cli.runCommand<Environment[]>(['account', 'environment', 'list'], undefined, { skipEnvironment: true }),
     );
   }
 
@@ -40,7 +40,7 @@ export class AccountService {
     return withCache(this.cache, `account:env:${name}`, () =>
       this.cli.runCommand<Environment>([
         'account', 'environment', 'describe', name,
-      ]),
+      ], undefined, { skipEnvironment: true }),
     );
   }
 
@@ -53,11 +53,11 @@ export class AccountService {
       'account', 'environment', 'create',
       '--type', type,
       name,
-    ]);
+    ], undefined, { skipEnvironment: true });
   }
 
   async deleteEnvironment(name: string): Promise<unknown> {
     this.cache.invalidatePattern('account:env');
-    return this.cli.runCommand(['account', 'environment', 'delete', name]);
+    return this.cli.runCommand(['account', 'environment', 'delete', name], undefined, { skipEnvironment: true });
   }
 }

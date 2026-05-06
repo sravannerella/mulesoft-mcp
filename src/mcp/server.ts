@@ -8,6 +8,7 @@ import { registerRuntimeManagerTools } from './tools/runtime-manager.tools.js';
 import { registerExchangeTools } from './tools/exchange.tools.js';
 import { registerApiManagerTools } from './tools/api-manager.tools.js';
 import { registerAccountTools } from './tools/account.tools.js';
+import { registerDiscoveryTools } from './tools/discovery.tools.js';
 
 export async function createMcpServer(container: AppContainer): Promise<void> {
   const server = new McpServer({
@@ -21,6 +22,7 @@ export async function createMcpServer(container: AppContainer): Promise<void> {
   registerExchangeTools(server, container.exchange);
   registerApiManagerTools(server, container.apiManager);
   registerAccountTools(server, container.account);
+  registerDiscoveryTools(server, container);
 
   // ── Connect via stdio transport ──────────────────────────────────────────
   const transport = new StdioServerTransport();

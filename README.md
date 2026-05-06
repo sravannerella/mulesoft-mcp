@@ -20,7 +20,8 @@ MCP server that wraps [Anypoint CLI v4](https://docs.mulesoft.com/anypoint-cli/l
 | `ANYPOINT_CLIENT_ID` | ¹ | — | Connected App client ID |
 | `ANYPOINT_CLIENT_SECRET` | ¹ | — | Connected App client secret |
 | `ANYPOINT_ORG_ID` | ✅ | — | Organisation ID |
-| `ANYPOINT_ENV_ID` | — | — | Default environment (e.g. `Sandbox`) |
+| `ANYPOINT_ENV_NAME` | — | — | Default environment name (e.g. `Sandbox`) |
+| `ANYPOINT_ENV_ID` | — | — | Legacy fallback for default environment selection |
 | `ANYPOINT_HOST` | — | `anypoint.mulesoft.com` | Hostname only — no `https://` |
 | `CLI_TIMEOUT_MS` | — | `30000` | Command timeout (ms) |
 | `CLI_MAX_RETRIES` | — | `3` | Retries on transient failures |
@@ -57,7 +58,7 @@ The server communicates over **stdio**. To connect Claude Desktop, add to `claud
         "ANYPOINT_CLIENT_ID": "...",
         "ANYPOINT_CLIENT_SECRET": "...",
         "ANYPOINT_ORG_ID": "...",
-        "ANYPOINT_ENV_ID": "Sandbox"
+        "ANYPOINT_ENV_NAME": "Sandbox"
       }
     }
   }
@@ -77,7 +78,7 @@ services:
       - ANYPOINT_CLIENT_ID=...
       - ANYPOINT_CLIENT_SECRET=...
       - ANYPOINT_ORG_ID=...
-      - ANYPOINT_ENV_ID=Sandbox
+      - ANYPOINT_ENV_NAME=Sandbox
     ports:
       - 8085:8000
 ```
@@ -109,16 +110,19 @@ All `.env` values are automatically loaded — credentials are never baked into 
 
 ---
 
-## Available Tools (29 total)
+## Available Tools (33 total)
 
-All environment-scoped tools accept an optional `environment` parameter that overrides `ANYPOINT_ENV_ID`.
+All environment-scoped tools accept an optional `environment` parameter that overrides `ANYPOINT_ENV_NAME`.
 
 ### Design Center
 
 | Tool | Description |
 |---|---|
 | `design_center_list_projects` | List all projects |
-| `design_center_create_project` | Create a project (`raml`/`oas`/`wsdl`/`fragment`) |
+| `design_center_create_project` | Create a project (`raml`/`oas`/`raml-fragment`) |
+| `design_center_publish_project` | Publish a project to Exchange |
+| `design_center_upload_project` | Upload (publish) a project to Exchange |
+| `design_center_download_project` | Download a project from Exchange |
 
 ### CloudHub 2.0
 
@@ -154,7 +158,7 @@ All environment-scoped tools accept an optional `environment` parameter that ove
 | Tool | Description |
 |---|---|
 | `exchange_list_assets` | List assets (`search`, `limit`, `offset`, `organizationOnly`) |
-| `exchange_get_asset` | Get a specific asset (`groupId`, `assetId`, `version`) |
+| `exchange_get_asset` | Get a specific asset (`assetId`, `version`, optional `groupId`) |
 
 ### API Manager
 
@@ -167,6 +171,14 @@ All environment-scoped tools accept an optional `environment` parameter that ove
 | `api_manager_apply_policy` | Apply a policy (`policyId`, `policyVersion`, `config`) |
 | `api_manager_unapply_policy` | Remove a policy |
 | `api_manager_list_contracts` | List client contracts |
+
+### Discovery
+
+| Tool | Description |
+|---|---|
+| `identify_insecure_apis` | Find API Manager instances with no applied policies and map them to deployed applications |
+| `get_all_api_instances` | List API Manager instances across all environments with associated applications |
+| `list_all_applications` | List on-prem, CloudHub 1.0, and CloudHub 2.0 applications with associated API instances |
 
 ### Account
 

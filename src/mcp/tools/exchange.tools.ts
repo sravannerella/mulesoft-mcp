@@ -40,7 +40,7 @@ export function registerExchangeTools(
     'exchange_get_asset',
     'Get details for a specific Exchange asset.',
     {
-      groupId: z.string().min(1).describe('Asset group ID'),
+      groupId: z.string().min(1).optional().describe('Asset group ID (optional)'),
       assetId: z.string().min(1).describe('Asset ID'),
       version: z.string().min(1).describe('Asset version'),
     },

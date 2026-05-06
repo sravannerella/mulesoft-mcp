@@ -34,13 +34,45 @@ export function registerDesignCenterTools(
     {
       name: z.string().min(1).describe('Project name'),
       type: z
-        .enum(['raml', 'oas', 'wsdl', 'fragment'])
+        .enum(['raml', 'oas', 'raml-fragment'])
         .default('raml')
         .describe('Project type'),
     },
     async ({ name, type }) => {
       try {
         return ok(await svc.createProject(name, type));
+      } catch (e) {
+        return err(e);
+      }
+    },
+  );
+
+  server.tool(
+    'design_center_publish_project',
+    'Publish a Design Center project to Exchange.',
+    {
+      name: z.string().min(1).describe('Project name'),
+      assetId: z.string().optional().describe('The asset assetId'),
+      groupId: z.string().optional().describe('The asset groupId (e.g., com.mulesoft.com)'),
+      version: z.string().optional().describe('The asset version (e.g., 1.0.0)'),
+      apiVersion: z.string().optional().describe('The API version for API specification projects'),
+      main: z.string().optional().describe('The name of the main file'),
+      status: z.string().optional().describe('The asset status'),
+      branch: z.string().optional().describe('The project branch'),
+      projectName: z.string().optional().describe('The name for the asset (if different from project name)'),
+    },
+    async ({ name, assetId, groupId, version, apiVersion, main, status, branch, projectName }) => {
+      try {
+        return ok(await svc.publishProject(name, {
+          assetId,
+          groupId,
+          version,
+          apiVersion,
+          main,
+          status,
+          branch,
+          projectName,
+        }));
       } catch (e) {
         return err(e);
       }

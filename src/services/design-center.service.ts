@@ -20,12 +20,12 @@ export class DesignCenterService {
 
   async createProject(
     name: string,
-    type: 'raml' | 'oas' | 'wsdl' | 'fragment' = 'raml',
+    type: 'raml' | 'oas' | 'raml-fragment' = 'raml',
   ): Promise<unknown> {
     this.cache.invalidatePattern('dc:');
     return this.cli.runCommand([
       'designcenter', 'project', 'create',
-      '--name', name,
+      name,
       '--type', type,
     ]);
   }
@@ -49,5 +49,31 @@ export class DesignCenterService {
       '--directory', directory,
       name,
     ]);
+  }
+
+  async publishProject(
+    name: string,
+    options?: {
+      assetId?: string;
+      groupId?: string;
+      version?: string;
+      apiVersion?: string;
+      main?: string;
+      status?: string;
+      branch?: string;
+      projectName?: string;
+    },
+  ): Promise<unknown> {
+    this.cache.invalidatePattern('dc:');
+    const args = ['designcenter', 'project', 'publish', name];
+    if (options?.assetId) args.push('--assetId', options.assetId);
+    if (options?.groupId) args.push('--groupId', options.groupId);
+    if (options?.version) args.push('--version', options.version);
+    if (options?.apiVersion) args.push('--apiVersion', options.apiVersion);
+    if (options?.main) args.push('--main', options.main);
+    if (options?.status) args.push('--status', options.status);
+    if (options?.branch) args.push('--branch', options.branch);
+    if (options?.projectName) args.push('--name', options.projectName);
+    return this.cli.runCommand(args, undefined, { skipGlobalArgs: true, skipEnvironment: true });
   }
 }

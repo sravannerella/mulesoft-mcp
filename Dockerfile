@@ -57,10 +57,12 @@ COPY --from=deps  /app/node_modules ./node_modules
 COPY --from=build /app/dist         ./dist
 COPY package.json ./
 
-# Fix ownership so the non-root user can read everything
+# Fix ownership so both root and non-root execution paths can read app files
 RUN chown -R mcp:mcp /app
 
-USER mcp
+# Run as root to avoid EACCES in constrained environments where tools
+# need to write config/cache/auth files at runtime.
+USER root
 
 # ── Runtime configuration ─────────────────────────────────────────────────────
 # These are safe defaults — override all sensitive values at runtime via
@@ -68,6 +70,7 @@ USER mcp
 # NEVER bake real credentials into the image.
 
 ENV NODE_ENV=production \
+  HOME=/root \
     LOG_LEVEL=info \
     CLI_TIMEOUT_MS=30000 \
     CLI_MAX_RETRIES=3 \

@@ -10,6 +10,11 @@ export interface CLIServiceConfig {
   maxRetries: number;
 }
 
+export interface RunCommandOptions {
+  skipEnvironment?: boolean;
+  skipGlobalArgs?: boolean;
+}
+
 export class CLIService {
   private readonly authEnv: NodeJS.ProcessEnv;
   private readonly globalArgs: string[];
@@ -24,13 +29,20 @@ export class CLIService {
 
   // ── Public API ─────────────────────────────────────────────────────────────
 
-  async runCommand<T = unknown>(command: string[], environment?: string): Promise<T> {
+  async runCommand<T = unknown>(
+    command: string[],
+    environment?: string,
+    options?: RunCommandOptions,
+  ): Promise<T> {
     await this.rateLimiter.acquire();
 
-    // Resolve environment: per-call override > .env default
-    const resolvedEnv = environment ?? env.ANYPOINT_ENV_ID;
+    // Resolve environment by name: per-call override > ANYPOINT_ENV_NAME > legacy ANYPOINT_ENV_ID
+    const resolvedEnv = options?.skipEnvironment
+      ? undefined
+      : environment ?? env.ANYPOINT_ENV_NAME ?? env.ANYPOINT_ENV_ID;
     const envArgs = resolvedEnv ? ['--environment', resolvedEnv] : [];
-    const fullArgs = [...command, ...this.globalArgs, ...envArgs];
+    const globalArgs = options?.skipGlobalArgs ? [] : this.globalArgs;
+    const fullArgs = [...command, ...globalArgs, ...envArgs];
     const sanitized = sanitizeArgs(fullArgs);
 
     logger.debug('Executing Anypoint CLI', { command: sanitized });
@@ -78,10 +90,23 @@ export class CLIService {
     }
 
     const e = error as Record<string, unknown>;
+    const shortMessage = typeof e['shortMessage'] === 'string' ? e['shortMessage'] : '';
+    const signal = typeof e['signal'] === 'string' ? e['signal'] : '';
 
     if (e['timedOut'] === true) {
       return new TimeoutError(
         `CLI command timed out after ${this.config.timeoutMs}ms`,
+        this.config.timeoutMs,
+      );
+    }
+
+    // execa may force-kill hung processes after timeout and surface it as SIGKILL.
+    if (
+      signal === 'SIGKILL' &&
+      (shortMessage.includes('Forced termination') || shortMessage.includes('Command was killed'))
+    ) {
+      return new TimeoutError(
+        `CLI command exceeded ${this.config.timeoutMs}ms and was force-terminated`,
         this.config.timeoutMs,
       );
     }

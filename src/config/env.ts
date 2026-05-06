@@ -11,6 +11,7 @@ const envSchema = z
 
     // ── Scope ─────────────────────────────────────────────────────────────
     ANYPOINT_ORG_ID: z.string().min(1, 'ANYPOINT_ORG_ID is required'),
+    ANYPOINT_ENV_NAME: z.string().optional(),
     ANYPOINT_ENV_ID: z.string().optional(),
 
     // ── Optional config ───────────────────────────────────────────────────

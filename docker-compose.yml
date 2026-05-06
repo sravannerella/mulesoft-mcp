@@ -6,6 +6,7 @@ services:
       target: runtime          # only build the final stage
     image: mulesoft-mcp:latest
     container_name: mulesoft-mcp
+    user: "0:0"
 
     # ── Load credentials from .env file ──────────────────────────────────────
     env_file:
@@ -63,13 +64,9 @@ services:
         max-size: '10m'
         max-file: '3'
 
-    # ── Security ──────────────────────────────────────────────────────────────
-    read_only: true
-    security_opt:
-      - no-new-privileges:true
-    tmpfs:
-      - /tmp                              # writable scratch space for CLI temp files
-      - /home/mcp/.config                 # anypoint-cli-v4 plugin cache dir
+    # ── Security / permissions (relaxed for local troubleshooting) ──────────
+    # Full write access to avoid EACCES while iterating locally.
+    read_only: false
 
     # ── Health check (supergateway /health endpoint) ──────────────────────────
     healthcheck:
